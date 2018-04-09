@@ -4,3 +4,8 @@ q-learning
 learning-rate = 0.01
 epsilon = 0.95
 15轮左右基本无失误
+
+
+
+
+python main.py
