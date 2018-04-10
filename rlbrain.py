@@ -3,23 +3,28 @@ import numpy as np
 
 class robot():
 
-    def __init__(self, actions, lr = 0.01, e_greedy = 0.96, namda = 0.8):
+    def __init__(self, actions, lr = 0.8, e_greedy = 0.96, namda = 0.8, userobot = True):
         self.actions = actions
         self.lr = lr
         self.epsilon = e_greedy
         self.namda = namda
+        self.userobot = userobot
         self.q_table = pd.DataFrame(columns=self.actions, dtype=np.float32)
 
     def choose_action(self, obs):
         self.is_state_exist(obs)
 
-        if np.random.uniform() > self.epsilon:
-            action = np.random.choice(self.actions)
+        if self.userobot:
+            if np.random.uniform() > self.epsilon:
+                action = np.random.choice(self.actions)
+
+            else:
+                state_action = self.q_table.loc[obs, : ]
+                state_action = state_action.reindex(np.random.permutation(state_action.index))
+                action = state_action.idxmax()
 
         else:
-            state_action = self.q_table.loc[obs, : ]
-            state_action = state_action.reindex(np.random.permutation(state_action.index))
-            action = state_action.idxmax()
+            action = np.random.choice(self.actions)
 
         return action
 

@@ -3,7 +3,7 @@ from rlbrain import robot
 
 def run():
     zyy = 'lover'
-    RL = robot(list(range(env.n_actions)))
+    RL = robot(list(range(env.n_actions)), userobot=True, e_greedy=1)
 
     succ = 0
     for episode in range(1000):
