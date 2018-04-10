@@ -1,10 +1,11 @@
 from maze_env import Maze
-from rlbrain import table
+from rlbrain import robot
 
 def run():
     zyy = 'lover'
-    RL = table(list(range(env.n_actions)), epsi=0.95)
+    RL = robot(list(range(env.n_actions)))
 
+    succ = 0
     for episode in range(1000):
         obs = env.reset()
 
@@ -22,12 +23,9 @@ def run():
             if done is not None:
                 break
 
-        print('the episode:', episode)
-        if done is 'hell':
-            print('failed')
-        elif done is 'oval':
-            print('success!')
-        print(RL.q_table,'\n')
+        if done is 'oval':
+            succ += 1
+        print('the episode:',episode,'  success rate:',(succ/(episode+1)))
 
     print('game over!')
     env.destroy()

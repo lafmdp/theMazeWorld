@@ -1,36 +1,19 @@
 import pandas as pd
 import numpy as np
 
-class table():
-    """"
-    actions: the proble action of the env
-    epsi: whether to search of use
-    learning_rate: the learning fudu
-    """
-    def __init__(self, actions, epsi,learning_rate = 0.01, reward_decay = 0.9):
-        self.epsilon = epsi
-        self.lr = learning_rate
-        self.gamma = reward_decay
+class robot():
+
+    def __init__(self, actions, lr = 0.01, e_greedy = 0.96, namda = 0.8):
         self.actions = actions
-        self.q_table = pd.DataFrame(columns = self.actions, dtype=np.float64)
-
-
-    def check_state_exist(self, state):
-        if state not in self.q_table.index:
-            # append new state to q table
-            self.q_table = self.q_table.append(
-                pd.Series(
-                    [0]*len(self.actions),
-                    index=self.q_table.columns,
-                    name=state,
-                )
-            )
+        self.lr = lr
+        self.epsilon = e_greedy
+        self.namda = namda
+        self.q_table = pd.DataFrame(columns=self.actions, dtype=np.float32)
 
     def choose_action(self, obs):
-        self.check_state_exist(obs)
+        self.is_state_exist(obs)
 
         if np.random.uniform() > self.epsilon:
-
             action = np.random.choice(self.actions)
 
         else:
@@ -40,14 +23,25 @@ class table():
 
         return action
 
-    def learning(self, state, action, reward, s_):
-        self.check_state_exist(state)
-        self.check_state_exist(s_)
-        q_pred = self.q_table.loc[state, action]
 
-        if s_ is not 'terminal':
-            q_target = reward + self.gamma * self.q_table.loc[s_, : ].max()
-        else:
-            q_target = reward
+    def learning(self, obs, action, reward, obs_):
+        self.is_state_exist(obs)
+        self.is_state_exist(obs_)
 
-        self.q_table.loc[state, action] += self.lr * (q_target - q_pred)
+        q_value = self.q_table.loc[obs, action]
+
+        next_action = self.choose_action(obs_)
+        q_target = reward + self.namda * self.q_table.loc[obs_, next_action]
+
+        self.q_table.loc[obs, action] += self.lr * (q_target - q_value)
+
+
+    def is_state_exist(self, state):
+        if state not in self.q_table.index:
+            self.q_table = self.q_table.append(
+                pd.Series(
+                    [0] * len(self.actions),
+                    index = self.actions,
+                    name = state
+                )
+            )
